@@ -96,14 +96,13 @@ class Responsable{
     public function listar($condicion = "") {
         $arregloResponsable = null;
         $base = new BaseDatos();
-        $consultaResponsables = "Select * from responsable ";
+        $consultaResponsables = "Select * FROM responsable ";
         /* se verifica si hay alguna condicion para agregar */
         if ($condicion != "") {
-            $consultaResponsables .= ' where ' . $condicion;
+            $consultaResponsables .= ' WHERE ' . $condicion;
         }
         /* añade que los registros se ordenen segun el apellido */
         $consultaResponsables .= " order by rapellido ";
-        //echo $consultaPersonas;
         if ($base->Iniciar()) {
             if ($base->Ejecutar($consultaResponsables)) {
                 $arregloResponsable = array();
@@ -116,7 +115,7 @@ class Responsable{
                     /* se cargan los datos obtenidos del array en un obj responsable */
                     $respons = new Responsable();
                     $respons->carga($Nombre, $Apellido, $numLicencia);
-                    $respons->setNumLicencia($numEmpleado);
+                    $respons->setNumEmpleado($numEmpleado);
                     /* el objeto cargado se añade a una coleccion de objetos Responsable */
                     array_push($arregloResponsable, $respons);
                 }
@@ -159,7 +158,7 @@ class Responsable{
         $resp = false;
         $base = new BaseDatos();
         /* se genera la consulta en base a los atributos cargados en la clase */
-        $consultaModifica = "UPDATE responsable SET 'rnumerolicencia='" . $this->getNumLicencia() .",'rnombre'=".$this->getNombre().",'rapellido'=".$this->getApellido(). " WHERE rnumeroempleado" . $this->getNumEmpleado();
+        $consultaModifica = "UPDATE responsable SET rnumerolicencia=" . $this->getNumLicencia() .",rnombre='".$this->getNombre()."',rapellido='".$this->getApellido(). "' WHERE rnumeroempleado =" . $this->getNumEmpleado();
         if ($base->Iniciar()) {
             if ($base->Ejecutar($consultaModifica)) {
                 /* En caso de que se inicie y ejecute correctamente se confirmara con el boolean */

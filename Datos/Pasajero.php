@@ -24,11 +24,16 @@ class Pasajero{
 
      public function carga($idViaje, $nombre, $apellido, $telefono, $documento){
         $objViaje = new Viaje();
-        $this->setObjViaje($objViaje->Buscar($idViaje));
-        $this->setNombre($nombre);
-        $this->setApellido($apellido);
-        $this->setTelefono($telefono);
-        $this->setDocumento($documento);
+        $result = $objViaje->Buscar($idViaje);
+        if($result){
+            $this->setObjViaje($objViaje);
+            $this->setNombre($nombre);
+            $this->setApellido($apellido);
+            $this->setTelefono($telefono);
+            $this->setDocumento($documento);
+
+        }
+        return $result;
      }
     /* Metodos setters */
 
@@ -87,12 +92,12 @@ class Pasajero{
 				if($row2=$base->Registro()){
                     /* se setean los atributos en base a los registros del arreglo indexado obtenido */
                     $objViaje = new Viaje;
-                    $this->setObjViaje($objViaje->Buscar($row2['idviaje']));
+                    $resp = $objViaje->Buscar($row2['idviaje']);
+                    $this->setObjViaje($objViaje);
                     $this->setDocumento($dni);
                     $this->setNombre($row2['pnombre']);
                     $this->setApellido($row2['papellido']);
                     $this->setTelefono($row2['ptelefono']);
-					$resp= true;
 				}				
 			
 		 	}	else {
@@ -176,7 +181,7 @@ class Pasajero{
     $resp =false; 
     $base=new BaseDatos();
     /* se crea el codigo de actualizacion usando como parametro el atributo clave de documento */
-    $consultaModifica="UPDATE pasajero SET pnombre='".$this->getNombre()."',papellido='".$this->getApellido()."', ptelefono=".$this->getTelefono().", idviaje= ".$this->getObjViaje()->getIdViaje()." WHERE pdocumento ='".$this->getDocumento()."'";
+    $consultaModifica="UPDATE pasajero SET pnombre='".$this->getNombre()."',papellido='".$this->getApellido()."', ptelefono=".$this->getTelefono()." WHERE pdocumento = ".$this->getDocumento()." && idviaje = ".$this->getObjViaje()->getIdViaje()." ";
     if($base->Iniciar()){
         if($base->Ejecutar($consultaModifica)){
             /* si se ejecuto la modificacion con exito */

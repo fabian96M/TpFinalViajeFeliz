@@ -19,24 +19,36 @@ class Viaje
         $this->idViaje = 0;
         $this->destino = "";
         $this->maxPasajeros = 0;
-        $this->objEmpresa = new Empresa;
-        $this->objResponsable = new Responsable;
-        $this->importe = 0.0;
+        $this->objEmpresa = new Empresa();
+        $this->objResponsable = new Responsable();
+        $this->importe = 0;
         $this->arrayPasajeros = [];
     }
     /* metodo carga */
     public function carga( $destino, $maxPasajeros, $idEmpresa, $numEmpleado, $importe){
-        $objResponsable = new Responsable;
-        $objEmpresa = new Empresa;
-        $objPasajero = new Pasajero;
+        $confirmacion = false;
+        $objResponsable = new Responsable();
+        $objEmpresa = new Empresa();
+        /* se realiza la busqueda de los objetos segun su clave */
+        $conf1 = $objResponsable->Buscar($numEmpleado);
+        $conf2 = $objEmpresa->Buscar($idEmpresa);
+        /* si ambas busquedas fueron positivas */
+        if($conf1 && $conf2){
+            /* se cargan los atributos al objeto  */
+            $this->setObjEmpresa($objEmpresa);
+            $this->setObjResponsable($objResponsable);
+            $this->setDestino($destino);
+            $this->setMaxPasajeros($maxPasajeros);
+            $this->setImporte($importe);
+            /* se confirmara que la carga fue exitosa */
+            $confirmacion = true;
+        }
+        return $confirmacion;
+       /*  $objPasajero = new Pasajero; */
 
         /* se obvia el idViaje al ser un atributo a definir por la bd */
-        $this->setDestino($destino);
-        $this->setMaxPasajeros($maxPasajeros);
-        $this->setObjEmpresa($objEmpresa->Buscar($idEmpresa));
-        $this->setObjResponsable($objResponsable->Buscar($numEmpleado));
-        $this->setImporte($importe);
-        $this->setArrayPasajeros($objPasajero->listar('idviaje='.$this->getIdViaje()));
+        
+        /* $this->setArrayPasajeros($objPasajero->listar('idviaje='.$this->getIdViaje())); */
     }
     /* Metodos Setters */
     public function setIdViaje($idViaje)
@@ -115,14 +127,21 @@ class Viaje
 			if($base->Ejecutar($consultaViaje)){
 				if($row2=$base->Registro()){
                     $objResponsable = new Responsable;
+                    $empresa = new Empresa;
+                    /* se buscan los atributos clave de cada obj y se guarda una confirmacion x cada busqueda */
+                    $resp1 = $empresa->Buscar($row2['idempresa']);
+                    $resp2 = $objResponsable->Buscar($row2['rnumeroempleado']);
+                    /* se definen los atributos locales de la clase */
 				    $this->setIdViaje($idViaje);
-				    $this->setDestino($row2['destino']);
+				    $this->setDestino($row2['vdestino']);
 					$this->setMaxPasajeros($row2['vcantmaxpasajeros']);
-					$this->setObjEmpresa($row2['idempresa']);
-                    /* Se delega la busqueda del objeto responsable a la clase responsable */
-					$this->setObjResponsable($objResponsable->Buscar($row2['rnumeroempleado']));
+					$this->setObjEmpresa($empresa);
+					$this->setObjResponsable($objResponsable);
                     $this->setImporte($row2['vimporte']);
-					$resp= true;
+                    /* si las busquedas de ambos obj fueron exitosas */
+                    if($resp1 && $resp2){
+                        $resp= true;
+                    }
 				}				
 			
 		 	}	else {
@@ -140,9 +159,9 @@ class Viaje
     public function listar($condicion=""){
 	    $arregloViaje = null;
 		$base=new BaseDatos();
-		$consultaViaje="Select * from viaje ";
+		$consultaViaje="Select * FROM viaje ";
 		if ($condicion!=""){
-		    $consultaViaje.=' where '.$condicion;
+		    $consultaViaje.=' WHERE '.$condicion;
 		}
 		$consultaViaje.=" order by vdestino";
 		//echo $consultaPersonas;
@@ -150,15 +169,19 @@ class Viaje
 			if($base->Ejecutar($consultaViaje)){				
 				$arregloViaje= array();
 				while($row2=$base->Registro()){
+                    /* se guardan los registros entregads en el arreglo $row2 */
 				    $id=$row2['idviaje'];
 					$destino=$row2['vdestino'];
 					$maxPasajeros=$row2['vcantmaxpasajeros'];
 					$idEmpresa=$row2['idempresa'];
 					$responsableV=$row2['rnumeroempleado'];
                     $importe = $row2['vimporte'];
-				
+
+                    /* se crea y añade cada dato al viaje */
 					$viaje=new Viaje();
-					$viaje->carga($id,$destino, $maxPasajeros, $idEmpresa, $responsableV, $importe);
+					$viaje->carga($destino, $maxPasajeros, $idEmpresa, $responsableV, $importe);
+                    $viaje->setIdViaje($id);
+                    /* se añade el viaje al arreglo de viajes */
 					array_push($arregloViaje,$viaje);
 	
 				}
@@ -179,8 +202,7 @@ class Viaje
     public function insertar(){
 		$base=new BaseDatos();
 		$resp= false;
-		$consultaInsertar="INSERT INTO viaje(vdestino, vcantmaxpasajeros, idempresa, rnumeroempleado, vimporte) 
-				VALUES (".$this->getDestino()."',".$this->getMaxPasajeros().",'".$this->getObjEmpresa()->getIdEmpresa()."','".$this->getObjResponsable()->getResponsable()."',".$this->getImporte().")";
+		$consultaInsertar=" INSERT INTO viaje(vdestino, vcantmaxpasajeros, idempresa, rnumeroempleado, vimporte) VALUES ('".$this->getDestino()."',".$this->getMaxPasajeros().",".$this->getObjEmpresa()->getId().",".$this->getObjResponsable()->getNumEmpleado().",".$this->getImporte().")";
 		
 		if($base->Iniciar()){
 
@@ -205,7 +227,7 @@ class Viaje
     public function modificar(){
 	    $resp =false; 
 	    $base=new BaseDatos();
-		$consultaModifica="UPDATE viaje SET vdestino='".$this->getDestino()."',vcantmaxpasajeros='".$this->getMaxPasajeros()."',idempresa='".$this->getObjEmpresa()->getIdEmpresa()."',rnumeroempleado=". $this->getObjResponsable()->getResponsable()." WHERE idviaje=".$this->getIdViaje();
+		$consultaModifica="UPDATE viaje SET vdestino='".$this->getDestino()."',vcantmaxpasajeros=".$this->getMaxPasajeros()." WHERE idviaje = " .$this->getIdViaje()."&& idempresa = ".$this->getObjEmpresa()->getId()."&& rnumeroempleado = ". $this->getObjResponsable()->getNumEmpleado()." ";
 		if($base->Iniciar()){
 			if($base->Ejecutar($consultaModifica)){
 			    $resp=  true;
@@ -253,11 +275,13 @@ class Viaje
     /* Metodo toString */
     public function __toString()
     {
+        $idEmpresa = $this->getObjEmpresa()->getId();
         $datosViaje= "";
         $datosViaje .= "\n Codigo de Viaje: " . $this->getIdViaje();
         $datosViaje .= " \n Destino: " . $this->getDestino();
         $datosViaje .= " \n Maximo de Pasajeros: " . $this->getMaxPasajeros();
-        $datosViaje .= " \n DATOS DEL RESPONSABLE: \n" . $this->getObjResponsable(). "\n";
+        $datosViaje .= " \n ID Empresa: ".$idEmpresa;
+        $datosViaje .= " \n Responsable (Codigo de Empleado):" . $this->getObjResponsable()->getNumEmpleado();
         $datosViaje .= "\n Importe: ".$this->getImporte();
         return $datosViaje;
     }
