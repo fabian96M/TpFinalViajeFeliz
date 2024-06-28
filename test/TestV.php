@@ -334,7 +334,9 @@ function modificarViaje() {
            \n 1) Modificar destino:
            \n 2) Modificar maximo de pasajeros
            \n 3) Modificar Importe de viaje
-           \n 4) Finalizar Modificaciones \n";
+           \n 4) Modificar El id Empresa 
+           \n 5) Modificar el Responsable 
+           \n 6) Finalizar Modificaciones \n";
             $eleccion = trim(fgets(STDIN));
             switch ($eleccion) {
                 case 1:
@@ -352,6 +354,14 @@ function modificarViaje() {
                     $importe = trim(fgets(STDIN));
                     $objViaje->setImporte($importe);
                     break;
+                case 4:/* modificar la empresa*/
+                    $objEmpresa = crearEmpresa();
+                    $objViaje->setObjEmpresa($objEmpresa);
+                    break;
+                case 5:/* modificar el Responsable */
+                    $objResponsable = crearResponsable();
+                    $objViaje->setObjResponsable($objResponsable);
+                    break;
                 default:
                     $bandera = false;
                     break;
@@ -364,9 +374,11 @@ function modificarViaje() {
     }
 }
 function eliminarViaje($idViaje) {
+    $confirm = false;
+    $objPasajero = new Pasajero;
     $objViaje = new Viaje;
     /* advertimos de la eliminacion de datos */
-    echo "\n Esta seguro de eliminar el viaje con codigo: " . $idViaje . " y todos sus elementos asociados (Responsable viaje y pasajeros)? \n
+    echo "\n Esta seguro de eliminar el viaje con codigo: " . $idViaje . "? , la eliminacion conllevara a la eliminacion tambien del Responsable del viaje \n
     1)SI \n
     2)NO \n
     ";
@@ -375,8 +387,15 @@ function eliminarViaje($idViaje) {
         /* si se accedio a eliminar */
         /* instanciamos un viaje con los atributos del viaje elegido */
         $objViaje->Buscar($idViaje);
-        /* eliminamos el viaje */
+        $arrPasajeros = $objPasajero->listar("idviaje = ".$objViaje->getIdViaje());
+        if((count($arrPasajeros)) > 0){
+            /* si hay pasajeros cargados en el arreglo se indicara que no es posible */
+            echo "\n No es posible eliminar el viaje ya que todavia hay ".count($arrPasajeros)." pasajeros cargados \n";
+        }else{
+             /* eliminamos el viaje */
         $confirm = $objViaje->eliminar();
+        }
+       
     }
     return $confirm;
 }
