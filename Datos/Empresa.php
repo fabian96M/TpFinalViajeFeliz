@@ -61,6 +61,7 @@ class Empresa {
                     $resp = true;
                 }
             } else $this->setmensajeoperacion($base->getError());
+            
         } else {
             $this->setmensajeoperacion($base->getError());
         }
@@ -79,10 +80,10 @@ class Empresa {
         }
         $consultaEmpresa .= " order by enombre";
 
-        if($base->Iniciar()){
-            if($base->Ejecutar($consultaEmpresa)){
+        if ($base->Iniciar()) {
+            if ($base->Ejecutar($consultaEmpresa)) {
                 $arregloEmpresa = array();
-                while($row2 = $base->Registro()){
+                while ($row2 = $base->Registro()) {
                     $id = $row2['idempresa'];
                     $nombre = $row2['enombre'];
                     $direccion = $row2['edireccion'];
@@ -92,10 +93,11 @@ class Empresa {
                     $empresa->setId($id);
                     array_push($arregloEmpresa, $empresa);
                 }
-            }else{
+            } else {
                 $this->setmensajeoperacion($base->getError());
+               
             }
-        }else{
+        } else {
             $this->setmensajeoperacion($base->getError());
         }
         return $arregloEmpresa;
@@ -103,61 +105,64 @@ class Empresa {
 
     /* Funcion Insertar empresa: Inserta los valores instanciados en el obj en la base de datos y obtiene el id con el que se guardo asignandolo al atribudo Id del objeto*/
 
-    public function Insertar(){
+    public function Insertar() {
         $base = new BaseDatos();
         $resp = false;
-        $consultaInsertar = "INSERT INTO empresa(idempresa, enombre, edireccion) 
-        VALUES(".$this->getId().",'".$this->getNombre()."','".$this->getDireccion()."')";
-        if($base->Iniciar()){
-            if($id = $base->devuelveIDInsercion($consultaInsertar)){
+        $consultaInsertar = "INSERT INTO empresa(enombre, edireccion) ";
+        $consultaInsertar .= "VALUES ('" . $this->getNombre() . "', '" . $this->getDireccion() . "')";
+        if ($base->Iniciar()) {
+            if ($id = $base->devuelveIDInsercion($consultaInsertar)) {
                 $this->setId($id);
                 $resp = true;
-            }else{
+            } else {
                 $this->setmensajeoperacion($base->getError());
+            
             }
-        }else{
+        } else {
             $this->setmensajeoperacion($base->getError());
         }
         return $resp;
     }
 
     /* Funcion Modificar: carga los datos del objeto en el registro que coincida con la id del objeto */
-    public function modificar(){
-	    $resp =false; 
-	    $base=new BaseDatos();
-		$consultaModifica="UPDATE empresa SET enombre='".$this->getNombre()."',edireccion='".$this->getDireccion()."' WHERE idempresa=".$this->getId();
-		if($base->Iniciar()){
-			if($base->Ejecutar($consultaModifica)){
-			    $resp=  true;
-			}else{
-				$this->setmensajeoperacion($base->getError());
-				
-			}
-		}else{
-				$this->setmensajeoperacion($base->getError());
-			
-		}
-		return $resp;
-	}
+    public function modificar() {
+        $resp = false;
+        $base = new BaseDatos();
+        $consultaModifica = "UPDATE empresa SET ";
+        $consultaModifica .= "enombre = '" . $this->getNombre() . "', ";
+        $consultaModifica .= "edireccion = '" . $this->getDireccion() . "' ";
+        $consultaModifica .= "WHERE idempresa = " . $this->getId();
+
+        if ($base->Iniciar()) {
+            if ($base->Ejecutar($consultaModifica)) {
+                $resp =  true;
+            } else {
+                $this->setmensajeoperacion($base->getError());
+               
+            }
+        } else {
+            $this->setmensajeoperacion($base->getError());
+        }
+        return $resp;
+    }
 
 
-    public function eliminar(){
-		$base=new BaseDatos();
-		$resp=false;
-		if($base->Iniciar()){
-				$consultaBorra="DELETE FROM empresa WHERE idempresa=".$this->getId();
-				if($base->Ejecutar($consultaBorra)){
-				    $resp=  true;
-				}else{
-						$this->setmensajeoperacion($base->getError());
-					
-				}
-		}else{
-				$this->setmensajeoperacion($base->getError());
-			
-		}
-		return $resp; 
-	}
+    public function eliminar() {
+        $base = new BaseDatos();
+        $resp = false;
+        if ($base->Iniciar()) {
+            $consultaBorra = "DELETE FROM empresa WHERE idempresa=" . $this->getId();
+            if ($base->Ejecutar($consultaBorra)) {
+                $resp =  true;
+            } else {
+                $this->setmensajeoperacion($base->getError());
+                
+            }
+        } else {
+            $this->setmensajeoperacion($base->getError());
+        }
+        return $resp;
+    }
 
     /* funcion toString */
     public function __toString() {

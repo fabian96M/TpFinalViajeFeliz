@@ -62,8 +62,10 @@ class BaseDatos {
         } else {
             $this->ERROR =  mysqli_connect_errno($conexion) . ": " . mysqli_connect_error($conexion);
         }
+    
         /* se retornara true si hubo exito */
         return $resp;
+        
     }
 
     /**
@@ -144,4 +146,5 @@ class BaseDatos {
         /* retornara null o el id clave de la tabla consultada */
         return $resp;
     }
+
 }

@@ -1,19 +1,19 @@
 <?php
 include_once "BaseDatos.php";
-class Responsable{
+class Responsable {
     /* atributos */
     private $numEmpleado;
     private $numLicencia;
     private $nombre;
-    private $apellido;  
+    private $apellido;
     private $mensajeOperacion;
 
     /* Metodo construct */
     public function __construct() {
         $this->numEmpleado = 0;
         $this->numLicencia = 0;
-        $this->nombre="";
-        $this->apellido="";
+        $this->nombre = "";
+        $this->apellido = "";
     }
     /* metodo carga */
     public function carga($nombre, $apellido, $numLicencia) {
@@ -29,12 +29,10 @@ class Responsable{
     public function setNumLicencia($numLicencia) {
         $this->numLicencia = $numLicencia;
     }
-    public function setNombre($nombre)
-    {
+    public function setNombre($nombre) {
         $this->nombre = $nombre;
     }
-    public function setApellido($apellido)
-    {
+    public function setApellido($apellido) {
         $this->apellido = $apellido;
     }
     public function setMensajeOperacion($mensajeOperacion) {
@@ -47,12 +45,10 @@ class Responsable{
     public function getNumLicencia() {
         return $this->numLicencia;
     }
-    public function getNombre()
-    {
+    public function getNombre() {
         return $this->nombre;
     }
-    public function getApellido()
-    {
+    public function getApellido() {
         return $this->apellido;
     }
     public function getMensajeOperacion() {
@@ -136,16 +132,16 @@ class Responsable{
         $resp = false;
         /* se genera la consulta para modificar los dos atributos no claves de la tabla */
         $consultaInsertar = "INSERT INTO responsable(rnumerolicencia, rnombre, rapellido) 
-				VALUES (" . $this->getNumLicencia(). ",'".$this->getNombre()."','".$this->getApellido()."')";
+				VALUES (" . $this->getNumLicencia() . ",'" . $this->getNombre() . "','" . $this->getApellido() . "')";
 
         if ($base->Iniciar()) {
-           /* si se consiguio iniciar la bd se realizara la consulta obteniendo el idAutogenerado */
+            /* si se consiguio iniciar la bd se realizara la consulta obteniendo el idAutogenerado */
             if ($numEmpleado = $base->devuelveIDInsercion($consultaInsertar)) {
                 /* se trae el numEmpleado generado en la bd y se setea localmente como atributo del obj */
                 $this->setNumEmpleado($numEmpleado);
                 $resp = true;
             } else {
-               $this->setmensajeoperacion($base->getError());
+                $this->setmensajeoperacion($base->getError());
             }
         } else {
             $this->setmensajeoperacion($base->getError());
@@ -158,7 +154,12 @@ class Responsable{
         $resp = false;
         $base = new BaseDatos();
         /* se genera la consulta en base a los atributos cargados en la clase */
-        $consultaModifica = "UPDATE responsable SET rnumerolicencia=" . $this->getNumLicencia() .",rnombre='".$this->getNombre()."',rapellido='".$this->getApellido(). "' WHERE rnumeroempleado =" . $this->getNumEmpleado();
+        $consultaModifica = "UPDATE responsable SET ";
+        $consultaModifica .= "rnumerolicencia = " . $this->getNumLicencia() . ", ";
+        $consultaModifica .= "rnombre = '" . $this->getNombre() . "', ";
+        $consultaModifica .= "rapellido = '" . $this->getApellido() . "' ";
+        $consultaModifica .= "WHERE rnumeroempleado = " . $this->getNumEmpleado();
+
         if ($base->Iniciar()) {
             if ($base->Ejecutar($consultaModifica)) {
                 /* En caso de que se inicie y ejecute correctamente se confirmara con el boolean */
