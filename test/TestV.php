@@ -334,7 +334,7 @@ function modificarViaje() {
            \n 1) Modificar destino:
            \n 2) Modificar maximo de pasajeros
            \n 3) Modificar Importe de viaje
-           \n 4) Modificar El id Empresa 
+           \n 4) Modificar la Empresa 
            \n 5) Modificar el Responsable 
            \n 6) Finalizar Modificaciones \n";
             $eleccion = trim(fgets(STDIN));
