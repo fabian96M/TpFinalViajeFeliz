@@ -330,7 +330,7 @@ function modificarViaje() {
         $objViaje->Buscar($idViaje);
         /* consultamos dentro de un bucle por las modificaciones y las seteamos a la instancia de viaje*/
         while ($bandera) {
-            echo "\n Elija un numero segun desee modificar:
+            echo "\n Elija un numero segun lo que desee modificar:
            \n 1) Modificar destino:
            \n 2) Modificar maximo de pasajeros
            \n 3) Modificar Importe de viaje
@@ -383,6 +383,7 @@ function eliminarViaje($idViaje) {
 function crearResponsable() {
     $objResponsable = new Responsable;
     /* solicitamos los datos del obj Responsable */
+    echo "\n A CONTINUACION INGRESE LOS DATOS DEL RESPONSABLE DEL VIAJE \n";
     echo "\n Ingrese numero de licencia: ";
     $numLic = trim(fgets(STDIN));
     echo "\n Ingrese nombre de empleado: ";
