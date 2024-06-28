@@ -18,7 +18,8 @@ while ($bandera) {
 5 - Para Modificar un Viaje \n
 6 - Para Eliminar un viaje \n
 7 - Para Añadir pasajeros a un viaje \n
-8 - Salir \n";
+8 - Para Eliminar Pasajeros de un viaje\n
+9 - Salir \n";
 
     /* Recibimos la opcion y segun ella ejecutamos la secuencia a realizar */
     $eleccion1 = trim(fgets(STDIN));
@@ -83,7 +84,26 @@ while ($bandera) {
             }
 
             break;
-        case 8:
+        case 8:/* Eliminar pasajero */
+            $idViaje = 0;
+            $objViaje = new Viaje;
+            $pasajero = new Pasajero;
+            /* mostramos el listado de viajes */
+            echo "" . listarArreglo($objViaje->listar());
+            echo "\n Escriba el codigo del viaje al que desee eliminar pasajeros: \n";
+            /* se busca el viaje segun si id */
+            $idViaje = trim(fgets(STDIN));
+            $encontrado = $objViaje->Buscar($idViaje);
+            if ($encontrado) {
+                $arrPasajeros = $pasajero->listar("idviaje =".$objViaje->getIdViaje());
+                if(count($arrPasajeros)>0){
+                    eliminarPasajeros($arrPasajeros);
+                }
+                
+            }
+
+            break;
+        case 9:
             /* opcion para SALIR */
             $bandera = false;
             echo "\n Tenga buen dia \n";
@@ -443,4 +463,34 @@ function aniadirPasajeros($objViaje) {
             $bandera = false;
         }
     }
+}
+function eliminarPasajeros($arrPasajeros){
+    /* buscamos dentro del viaje la coleccion de pasajeros */
+    $pasajero = new Pasajero;
+    $result = false;
+    /* recorremos el arreglo de pasajeros del viaje */
+    foreach($arrPasajeros as $pasajero){
+        echo "\n Desea eliminar el siguiente pasajero? \n";
+        echo " ".$pasajero;
+        echo "\n 1)SI \n
+                 2) NO \n";
+        $opElim = trim(fgets(STDIN));
+        if($opElim == 1){
+            $arrayElim[]=$pasajero;
+        }
+    }
+    if(count($arrayElim)>0){
+        foreach($arrayElim as $pas){
+           $result = $pas->eliminar();
+           if($result = true){
+            echo "\n Se ha eliminado correctamente \n";
+           }
+        }
+        return $result;
+
+    }
+    
+    
+
+
 }
